@@ -1,0 +1,84 @@
+@model AtmRedcqBank.Web.Services.RetiroResult
+@{
+    ViewData["Title"] = "Comprobante de Retiro";
+}
+
+<div class="container mt-4" style="max-width: 520px;">
+    <div class="alert alert-success text-center">
+        <h5>✅ Operación exitosa</h5>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body p-4">
+            <h5 class="fw-bold text-center mb-3">Comprobante de Retiro</h5>
+            <hr>
+
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Operación</span>
+                <span class="fw-semibold">@Model.NumeroOperacion</span>
+            </div>
+
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Monto retirado</span>
+                <span class="fw-bold">@Model.MonedaRetiroSimbolo @Model.MontoRetirado.ToString("N2")</span>
+            </div>
+
+            @if (Model.TipoCambioAplicado != null)
+            {
+                <div class="mb-2">
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Tipo de cambio</span>
+                        <span>@Model.TipoCambioAplicado</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Equivalente en cuenta</span>
+                        <span>@Model.MonedaCuentaSimbolo @Model.MontoDebitado.ToString("N2")</span>
+                    </div>
+                </div>
+            }
+
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">ITF</span>
+                <span>@Model.MonedaCuentaSimbolo @Model.Itf.ToString("N2")</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Comisión</span>
+                <span>@Model.MonedaCuentaSimbolo @Model.Comision.ToString("N2")</span>
+            </div>
+
+            <hr>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Total debitado</span>
+                <span class="fw-semibold">@Model.MonedaCuentaSimbolo @Model.TotalDebitado.ToString("N2")</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Saldo anterior</span>
+                <span>@Model.MonedaCuentaSimbolo @Model.SaldoAnterior.ToString("N2")</span>
+            </div>
+            <div class="d-flex justify-content-between mb-3">
+                <span class="text-muted">Saldo posterior</span>
+                <span class="fw-bold text-success">@Model.MonedaCuentaSimbolo
+                    @Model.SaldoPosterior.ToString("N2")</span>
+                </div>
+
+                <hr>
+                @if (Model.Desglose != null && Model.Desglose.Count > 0)
+                {
+                    <h6 class="fw-bold">Desglose de billetes</h6>
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var kv in Model.Desglose)
+                        {
+                            if (kv.Value > 0)
+                            {
+                                <li>@kv.Value billete(s) de @Model.MonedaRetiroSimbolo @kv.Key</li>
+                            }
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+
+        <form asp-action="CerrarComprobante" method="post" class="mt-4 d-grid">
+            <button type="submit" class="btn btn-primary btn-lg w-100">Volver al menú</button>
+        </form>
+    </div>

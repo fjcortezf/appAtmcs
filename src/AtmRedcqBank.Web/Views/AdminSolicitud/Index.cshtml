@@ -1,0 +1,117 @@
+@model List<AtmRedcqBank.Web.Models.Entities.SolicitudTarjeta>
+@{
+    ViewData["Title"] = "Solicitudes de renovación";
+}
+
+<div class="container mt-4" style="max-width: 1000px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Solicitudes de renovación</h3>
+        <a asp-controller="AdminHome" asp-action="Index" class="btn btn-outline-secondary btn-sm">Volver</a>
+    </div>
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success">@TempData["Mensaje"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <!-- Alert de solicitud atendida -->
+    @if (TempData["TarjetaAtendidaNumero"] != null)
+    {
+        <div class="alert alert-success">
+            <h5 class="fw-bold">Solicitud atendida</h5>
+            <p class="mb-1">Nueva tarjeta: <strong>@TempData["TarjetaAtendidaNumero"]</strong></p>
+            <p class="mb-1">PIN: <strong class="fs-5">@TempData["TarjetaAtendidaPin"]</strong></p>
+            <p class="mb-0">Cuentas reasociadas: <strong>@TempData["CuentasReasociadas"]</strong></p>
+            <hr>
+            <div class="small text-danger">
+                <i class="bi bi-exclamation-triangle"></i>
+                Anote el PIN. No se volverá a mostrar. Entréguelo al cliente.
+            </div>
+        </div>
+    }
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="alert alert-info">No hay solicitudes registradas.</div>
+    }
+    else
+    {
+        <div class="card shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Documento</th>
+                            <th>Tarjeta anterior</th>
+                            <th>Motivo</th>
+                            <th>Estado</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in Model)
+                        {
+                            <tr>
+                                <td class="text-muted small">@s.FechaSolicitud.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@s.Cliente?.Nombres @s.Cliente?.Apellidos</td>
+                                <td>@s.Cliente?.TipoDocumento @s.Cliente?.NumeroDocumento</td>
+                                <td>
+                                    @if (s.TarjetaAnterior != null)
+                                    {
+                                        @s.TarjetaAnterior.NumeroTarjeta.Substring(0, 4)
+                                        <span> **** </span>
+                                        @s.TarjetaAnterior.NumeroTarjeta.Substring(12, 4)
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning text-dark">@s.Motivo</span>
+                                </td>
+                                <td>
+                                    @if (s.Estado == AtmRedcqBank.Web.Models.Enums.EstadoSolicitud.PENDIENTE)
+                                    {
+                                        <span class="badge bg-warning text-dark">Pendiente</span>
+                                    }
+                                    else if (s.Estado == AtmRedcqBank.Web.Models.Enums.EstadoSolicitud.ATENDIDA)
+                                    {
+                                        <span class="badge bg-success">Atendida</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Rechazada</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    @if (s.Estado == AtmRedcqBank.Web.Models.Enums.EstadoSolicitud.PENDIENTE)
+                                    {
+                                        <form asp-action="Atender" method="post" class="d-inline">
+                                            <input type="hidden" name="id" value="@s.Id" />
+                                            <button type="submit" class="btn btn-sm btn-primary">Atender</button>
+                                        </form>
+                                        <form asp-action="Rechazar" method="post" class="d-inline">
+                                            <input type="hidden" name="id" value="@s.Id" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Rechazar</button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">—</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

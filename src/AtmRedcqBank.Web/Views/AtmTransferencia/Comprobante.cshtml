@@ -1,0 +1,78 @@
+@model AtmRedcqBank.Web.Services.TransferenciaResult
+@{
+    ViewData["Title"] = "Comprobante de Transferencia";
+}
+
+<div class="container mt-4" style="max-width: 520px;">
+    <div class="alert alert-success text-center">
+        <h5>✅ Operación exitosa</h5>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body p-4">
+            <h5 class="fw-bold text-center mb-3">Comprobante de Transferencia</h5>
+            <hr>
+
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Operación</span>
+                <span class="fw-semibold">@Model.NumeroOperacion</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Cuenta origen</span>
+                <span>@Model.CuentaOrigen</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Cuenta destino</span>
+                <span>@Model.CuentaDestino</span>
+            </div>
+
+            <hr>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Monto transferido</span>
+                <span class="fw-bold">@Model.SimboloOrigen @Model.MontoOrigen.ToString("N2")</span>
+            </div>
+
+            @if (Model.TipoCambioAplicado != null)
+            {
+                <div class="mb-2">
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Tipo de cambio</span>
+                        <span>@Model.TipoCambioAplicado</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Monto acreditado</span>
+                        <span>@Model.SimboloDestino @Model.MontoDestino.ToString("N2")</span>
+                    </div>
+                </div>
+            }
+
+            <hr>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">ITF</span>
+                <span>@Model.SimboloOrigen @Model.Itf.ToString("N2")</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Comisión</span>
+                <span>@Model.SimboloOrigen @Model.Comision.ToString("N2")</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Total debitado</span>
+                <span class="fw-semibold">@Model.SimboloOrigen @Model.TotalDebitado.ToString("N2")</span>
+            </div>
+
+            <hr>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Saldo anterior</span>
+                <span>@Model.SimboloOrigen @Model.SaldoAnterior.ToString("N2")</span>
+            </div>
+            <div class="d-flex justify-content-between mb-3">
+                <span class="text-muted">Saldo posterior</span>
+                <span class="fw-bold text-success">@Model.SimboloOrigen @Model.SaldoPosterior.ToString("N2")</span>
+            </div>
+        </div>
+    </div>
+
+    <form asp-action="CerrarComprobante" method="post" class="mt-4 d-grid">
+        <button type="submit" class="btn btn-primary btn-lg w-100">Volver al menú</button>
+    </form>
+</div>

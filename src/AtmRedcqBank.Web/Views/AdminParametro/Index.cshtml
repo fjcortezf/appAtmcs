@@ -1,0 +1,55 @@
+@model List<AtmRedcqBank.Web.Models.Entities.Parametro>
+@{
+    ViewData["Title"] = "Parámetros";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Parámetros del sistema</h3>
+        <a asp-controller="AdminHome" asp-action="Index" class="btn btn-outline-secondary btn-sm">Volver</a>
+    </div>
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success">@TempData["Mensaje"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Clave</th>
+                        <th>Valor</th>
+                        <th>Tipo</th>
+                        <th>Descripción</th>
+                        <th style="width: 40%;">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@p.Clave</td>
+                            <td>@p.Valor</td>
+                            <td><span class="badge bg-secondary">@p.TipoDato</span></td>
+                            <td class="text-muted small">@p.Descripcion</td>
+                            <td>
+                                <form asp-action="Editar" method="post" class="d-flex gap-2">
+                                    <input type="hidden" name="id" value="@p.Id" />
+                                    <input type="text" name="valor" value="@p.Valor" class="form-control form-control-sm" />
+                                    <input type="text" name="motivo" placeholder="Motivo (opcional)" class="form-control form-control-sm" />
+                                    <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,104 @@
+@model List<AtmRedcqBank.Web.Models.Entities.TipoCambio>
+@{
+    ViewData["Title"] = "Tipo de cambio";
+    var hoy = ViewBag.TipoCambioHoy as AtmRedcqBank.Web.Models.Entities.TipoCambio;
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Tipo de cambio del día</h3>
+        <a asp-controller="AdminHome" asp-action="Index" class="btn btn-outline-secondary btn-sm">Volver</a>
+    </div>
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success">@TempData["Mensaje"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <!-- Card estado actual -->
+    @if (hoy != null)
+    {
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="text-muted small">Registrado para hoy</div>
+                <div class="row mt-2">
+                    <div class="col-6">
+                        <div class="text-muted small">Compra</div>
+                        <div class="fw-bold fs-4">@hoy.TasaCompra.ToString("N4")</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-muted small">Venta</div>
+                        <div class="fw-bold fs-4">@hoy.TasaVenta.ToString("N4")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Botón cargar automático -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h6 class="fw-bold">Carga automática desde el BCRP</h6>
+            <p class="text-muted small mb-2">Consulta el BCRP y carga todos los días faltantes desde el último registro.</p>
+            <form asp-action="CargarBcrp" method="post">
+                <button type="submit" class="btn btn-primary">Cargar del BCRP</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Registro manual -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h6 class="fw-bold">@(hoy != null ? "Actualizar manualmente" : "Registrar manualmente")</h6>
+            <form asp-action="RegistrarManual" method="post">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <label class="form-label">Tasa compra (S/ por USD)</label>
+                        <input type="number" step="0.0001" min="0.0001" name="tasaCompra" class="form-control" required value="@(hoy?.TasaCompra)">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">Tasa venta (S/ por USD)</label>
+                        <input type="number" step="0.0001" min="0.0001" name="tasaVenta" class="form-control" required value="@(hoy?.TasaVenta)">
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Historial -->
+    <h5>Últimos 30 días</h5>
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-sm mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Fecha</th>
+                        <th class="text-end">Compra</th>
+                        <th class="text-end">Venta</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var t in Model)
+                    {
+                        <tr>
+                            <td>@t.Fecha.ToString("dd/MM/yyyy")</td>
+                            <td class="text-end">@t.TasaCompra.ToString("N4")</td>
+                            <td class="text-end">@t.TasaVenta.ToString("N4")</td>
+                        </tr>
+                    }
+                    @if (Model.Count == 0)
+                    {
+                        <tr><td colspan="3" class="text-center text-muted py-3">Sin registros.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

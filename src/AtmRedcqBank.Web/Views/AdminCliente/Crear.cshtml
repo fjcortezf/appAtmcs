@@ -1,0 +1,66 @@
+@model AtmRedcqBank.Web.Models.Dtos.ClienteCrearForm
+@{
+    ViewData["Title"] = "Nuevo cliente";
+}
+
+<div class="container mt-4" style="max-width: 620px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Nuevo cliente</h3>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Volver</a>
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <div asp-validation-summary="All"></div>
+        </div>
+    }
+
+    <form asp-action="Crear" method="post" autocomplete="off">
+        <div class="row g-3 mb-3">
+            <div class="col-6">
+                <label asp-for="Nombres" class="form-label">Nombres</label>
+                <input asp-for="Nombres" class="form-control" required />
+                <span asp-validation-for="Nombres" class="text-danger small"></span>
+            </div>
+            <div class="col-6">
+                <label asp-for="Apellidos" class="form-label">Apellidos</label>
+                <input asp-for="Apellidos" class="form-control" required />
+                <span asp-validation-for="Apellidos" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-5">
+                <label asp-for="TipoDocumento" class="form-label">Tipo documento</label>
+                <select asp-for="TipoDocumento" class="form-select">
+                    <option value="DNI">DNI</option>
+                    <option value="CE">Carné de extranjería</option>
+                    <option value="PASAPORTE">Pasaporte</option>
+                </select>
+            </div>
+            <div class="col-7">
+                <label asp-for="NumeroDocumento" class="form-label">Número documento</label>
+                <input asp-for="NumeroDocumento" class="form-control" required />
+                <span asp-validation-for="NumeroDocumento" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label">Email (opcional)</label>
+            <input asp-for="Email" class="form-control" type="email" />
+            <span asp-validation-for="Email" class="text-danger small"></span>
+        </div>
+
+        <div class="mb-4">
+            <label asp-for="Telefono" class="form-label">Teléfono (opcional)</label>
+            <input asp-for="Telefono" class="form-control" />
+            <span asp-validation-for="Telefono" class="text-danger small"></span>
+        </div>
+
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary btn-lg">Crear cliente</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>

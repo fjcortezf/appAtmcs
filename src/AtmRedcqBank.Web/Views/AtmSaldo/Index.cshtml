@@ -1,0 +1,25 @@
+@model AtmRedcqBank.Web.Models.Entities.Cuenta
+@{
+    ViewData["Title"] = "Consulta de saldo";
+    var simbolo = Model.Moneda == AtmRedcqBank.Web.Models.Enums.Moneda.PEN ? "S/" : "$";
+}
+
+<div class="container mt-5" style="max-width: 520px;">
+    <div class="card shadow text-center">
+        <div class="card-body p-5">
+            <h4 class="mb-4">Consulta de Saldo</h4>
+            
+            <div class="mb-3">
+                <div class="text-muted small">@Model.TipoCuenta @Model.SubtipoCuenta</div>
+                <div class="text-muted">@Model.NumeroCuenta.Substring(0, 4) **** @Model.NumeroCuenta.Substring(10, 4)</div>
+            </div>
+
+            <div class="display-5 fw-bold mb-2">@simbolo @Model.Saldo.ToString("N2")</div>
+            <div class="text-muted mb-4">@Model.Moneda</div>
+
+            <div class="d-grid gap-2">
+                <a asp-controller="AtmMenu" asp-action="Index" class="btn btn-primary btn-lg">Volver al menú</a>
+            </div>
+        </div>
+    </div>
+</div>

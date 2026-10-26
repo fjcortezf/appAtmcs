@@ -1,0 +1,85 @@
+@{
+    ViewData["Title"] = "Procesos de Sistemas";
+    bool mantEjecutado = ViewBag.MantenimientoEjecutado ?? false;
+    bool intEjecutados = ViewBag.InteresesEjecutados ?? false;
+}
+
+<div class="container mt-4" style="max-width: 800px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Procesos de Sistemas</h3>
+        <a asp-controller="AdminHome" asp-action="Index" class="btn btn-outline-secondary btn-sm">Volver</a>
+    </div>
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success">@TempData["Mensaje"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <!-- Mantenimiento -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h5 class="fw-bold mb-1">Cobro de mantenimiento</h5>
+                    <p class="text-muted small mb-2">
+                        Aplica a cuentas Normal, Sueldo y Corriente. Free exenta.
+                    </p>
+
+                    @if (mantEjecutado)
+                    {
+                        <div class="text-success small">
+                            <i class="bi bi-check-circle-fill"></i> Ya ejecutado este mes.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-warning small">
+                            <i class="bi bi-clock-history"></i> Pendiente de ejecución este mes.
+                        </div>
+                    }
+                </div>
+                <form asp-action="EjecutarMantenimiento" method="post">
+                    <button type="submit" class="btn btn-primary" @(mantEjecutado ? "disabled" : "")>
+                        Ejecutar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Intereses -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h5 class="fw-bold mb-1">Abono de intereses (TEA)</h5>
+                    <p class="text-muted small mb-2">
+                        TEA mensualizada sobre el saldo. Free exenta.
+                    </p>
+
+                    @if (intEjecutados)
+                    {
+                        <div class="text-success small">
+                            <i class="bi bi-check-circle-fill"></i> Ya ejecutado este mes.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-warning small">
+                            <i class="bi bi-clock-history"></i> Pendiente de ejecución este mes.
+                        </div>
+                    }
+                </div>
+                <form asp-action="EjecutarIntereses" method="post">
+                    <button type="submit" class="btn btn-primary" @(intEjecutados ? "disabled" : "")>
+                        Ejecutar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

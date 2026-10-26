@@ -1,0 +1,99 @@
+@model List<AtmRedcqBank.Web.Models.Entities.Auditoria>
+@{
+    ViewData["Title"] = "Auditoría";
+}
+
+<div class="container mt-4" style="max-width: 1200px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Auditoría</h3>
+        <a asp-controller="AdminHome" asp-action="Index" class="btn btn-outline-secondary btn-sm">Volver</a>
+    </div>
+
+    <!-- Filtros -->
+    <form method="get" asp-action="Index" class="card shadow-sm mb-3">
+        <div class="card-body">
+            <div class="row g-2">
+                <div class="col-md-2">
+                    <label class="form-label small mb-1">Desde</label>
+                    <input type="date" name="desde" class="form-control form-control-sm" value="@(ViewBag.Desde?.ToString("yyyy-MM-dd"))">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small mb-1">Hasta</label>
+                    <input type="date" name="hasta" class="form-control form-control-sm" value="@(ViewBag.Hasta?.ToString("yyyy-MM-dd"))">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small mb-1">Actor</label>
+                    <select name="tipoActor" class="form-select form-select-sm">
+                        <option value="">Todos</option>
+                        <option value="PERSONAL" selected="@(ViewBag.TipoActor == "PERSONAL")">PERSONAL</option>
+                        <option value="CLIENTE" selected="@(ViewBag.TipoActor == "CLIENTE")">CLIENTE</option>
+                        <option value="SISTEMA" selected="@(ViewBag.TipoActor == "SISTEMA")">SISTEMA</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small mb-1">Operación</label>
+                    <input type="text" name="operacion" class="form-control form-control-sm" value="@ViewBag.Operacion" placeholder="Ej. LOGIN_ATM">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small mb-1">Resultado</label>
+                    <select name="resultado" class="form-select form-select-sm">
+                        <option value="">Todos</option>
+                        <option value="EXITO" selected="@(ViewBag.Resultado == "EXITO")">EXITO</option>
+                        <option value="FALLO" selected="@(ViewBag.Resultado == "FALLO")">FALLO</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary btn-sm w-100">Filtrar</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Tabla -->
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Actor</th>
+                        <th>Email / Tarjeta</th>
+                        <th>Operación</th>
+                        <th>Recurso</th>
+                        <th>Resultado</th>
+                        <th>IP</th>
+                        <th>Detalle</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var a in Model)
+                    {
+                        <tr>
+                            <td class="text-muted small">@a.Timestamp.ToString("dd/MM/yy HH:mm:ss")</td>
+                            <td>@a.TipoActor</td>
+                            <td class="text-muted small">@a.EmailActor</td>
+                            <td>@a.Operacion</td>
+                            <td class="text-muted small">@a.Recurso</td>
+                            <td>
+                                @if (a.Resultado == "EXITO")
+                                {
+                                    <span class="badge bg-success">Éxito</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Fallo</span>
+                                }
+                            </td>
+                            <td class="text-muted small">@a.Ip</td>
+                            <td class="text-muted small">@a.Detalle</td>
+                        </tr>
+                    }
+                    @if (Model.Count == 0)
+                    {
+                        <tr><td colspan="8" class="text-center text-muted py-3">Sin resultados.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

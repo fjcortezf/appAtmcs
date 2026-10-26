@@ -1,0 +1,41 @@
+@model AtmRedcqBank.Web.Models.Dtos.LoginAtmForm
+@{
+    ViewData["Title"] = "Acceso Cliente";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <h3 class="text-center mb-3">Acceso Cliente</h3>
+                    <p class="text-muted text-center mb-4">Ingrese su tarjeta y PIN</p>
+
+                    @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
+                    {
+                        <div class="alert alert-danger">
+                            <div asp-validation-summary="All"></div>
+                        </div>
+                    }
+
+                    <form asp-action="Login" method="post" autocomplete="off">
+                        <div class="mb-3">
+                            <label asp-for="NumeroTarjeta" class="form-label">Número de tarjeta</label>
+                            <input asp-for="NumeroTarjeta" class="form-control text-center" maxlength="16" placeholder="3004 XXXX XXXX XXXX" autofocus />
+                            <span asp-validation-for="NumeroTarjeta" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-4">
+                            <label asp-for="Pin" class="form-label">PIN</label>
+                            <input asp-for="Pin" class="form-control text-center" type="password" maxlength="4" placeholder="••••" />
+                            <span asp-validation-for="Pin" class="text-danger small"></span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Ingresar</button>
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

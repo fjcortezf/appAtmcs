@@ -1,0 +1,55 @@
+﻿@{
+    ViewData["Title"] = "REDCQ BANK";
+}
+
+<div class="d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+    <div class="card shadow-lg border-0" style="max-width: 720px; width: 100%;">
+        <div class="card-body text-center p-5">
+
+            <h1 class="h3 fw-bold mb-1">REDCQ BANK</h1>
+            <p class="text-muted mb-4">Bienvenido al cajero automático</p>
+
+            <p class="mb-4">Seleccione el tipo de acceso:</p>
+
+            <div class="row g-3">
+                <div class="col-6">
+                    <a asp-controller="AdminAuth" asp-action="Login" class="text-decoration-none">
+                        <div class="card opcion-card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <img src="~/img/banco.png" alt="Personal del banco" class="opcion-img mb-3" />
+                                <div class="fw-semibold text-dark">Personal del banco</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-6">
+                    <a asp-controller="AtmAuth" asp-action="Login" class="text-decoration-none">
+                        <div class="card opcion-card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <img src="~/img/cliente.png" alt="Cliente" class="opcion-img mb-3" />
+                                <div class="fw-semibold text-dark">Cliente / ATM</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .opcion-card {
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        cursor: pointer;
+    }
+    .opcion-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15) !important;
+    }
+    .opcion-img {
+        width: 220px;
+        height: 220px;
+        object-fit: contain;
+    }
+</style>

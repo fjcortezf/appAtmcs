@@ -1,0 +1,14 @@
+# .NET
+bin/
+obj/
+.vs/
+*.user
+
+# Logs
+*.log
+
+# Secretos locales (no subir)
+appsettings.*.json
+!appsettings.json
+!appsettings.Development.json
+

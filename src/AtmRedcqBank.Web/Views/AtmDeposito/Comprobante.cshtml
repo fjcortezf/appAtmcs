@@ -1,0 +1,63 @@
+@model AtmRedcqBank.Web.Services.DepositoResult
+@{
+    ViewData["Title"] = "Comprobante de Depósito";
+}
+
+<div class="container mt-4" style="max-width: 520px;">
+    <div class="alert alert-success text-center">
+        <h5>✅ Operación exitosa</h5>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body p-4">
+            <h5 class="fw-bold text-center mb-3">Comprobante de Depósito</h5>
+            <hr>
+
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Operación</span>
+                <span class="fw-semibold">@Model.NumeroOperacion</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Monto depositado</span>
+                <span class="fw-bold">@Model.Simbolo @Model.MontoDepositado.ToString("N2")</span>
+            </div>
+
+            @if (Model.DeudasCobradas > 0)
+            {
+                <hr>
+                <h6 class="fw-bold">Deudas cobradas</h6>
+                <ul class="list-unstyled mb-0">
+                    @foreach (var d in Model.DeudasDetalle)
+                    {
+                        <li class="d-flex justify-content-between">
+                            <span class="text-muted">@d.TipoCargo</span>
+                            <span>@Model.Simbolo @d.Monto.ToString("N2")</span>
+                        </li>
+                    }
+                </ul>
+                <div class="d-flex justify-content-between mt-2">
+                    <span class="text-muted fw-semibold">Total deudas</span>
+                    <span class="fw-semibold">@Model.Simbolo @Model.DeudasCobradas.ToString("N2")</span>
+                </div>
+            }
+
+            <hr>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Monto acreditado</span>
+                <span class="fw-bold text-success">@Model.Simbolo @Model.MontoAcreditado.ToString("N2")</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Saldo anterior</span>
+                <span>@Model.Simbolo @Model.SaldoAnterior.ToString("N2")</span>
+            </div>
+            <div class="d-flex justify-content-between mb-3">
+                <span class="text-muted">Saldo posterior</span>
+                <span class="fw-bold text-success">@Model.Simbolo @Model.SaldoPosterior.ToString("N2")</span>
+            </div>
+        </div>
+    </div>
+
+    <form asp-action="CerrarComprobante" method="post" class="mt-4 d-grid">
+        <button type="submit" class="btn btn-primary btn-lg w-100">Volver al menú</button>
+    </form>
+</div>

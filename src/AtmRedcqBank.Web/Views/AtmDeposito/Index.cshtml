@@ -1,0 +1,51 @@
+@model AtmRedcqBank.Web.Models.Dtos.DepositoRequest
+@{
+    ViewData["Title"] = "Depositar";
+    var cuenta = ViewBag.Cuenta as AtmRedcqBank.Web.Models.Entities.Cuenta;
+    var montosRapidos = ViewBag.MontosRapidos as List<int> ?? new List<int>();
+    var simbolo = cuenta?.Moneda == AtmRedcqBank.Web.Models.Enums.Moneda.PEN ? "S/" : "$";
+}
+
+<div class="container mt-4" style="max-width: 620px;">
+    <h4 class="mb-3">Depositar dinero</h4>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
+
+    <p class="text-muted">Seleccione un monto o ingrese uno personalizado (múltiplo de 20).</p>
+
+    <!-- Montos rápidos -->
+    <div class="row g-2 mb-4">
+        @foreach (var m in montosRapidos)
+        {
+            <div class="col-6 col-md-4">
+                <form asp-action="Depositar" method="post">
+                    <input type="hidden" name="Monto" value="@m" />
+                    <button type="submit" class="btn btn-outline-success w-100 py-3 fs-5 fw-bold">
+                        @simbolo @m
+                    </button>
+                </form>
+            </div>
+        }
+    </div>
+
+    <!-- Monto personalizado -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h6 class="fw-bold">Otro monto</h6>
+            <form asp-action="Depositar" method="post">
+                <div class="input-group">
+                    <span class="input-group-text">@simbolo</span>
+                    <input type="number" step="20" min="20" name="Monto" class="form-control" placeholder="0" required>
+                    <button type="submit" class="btn btn-success">Depositar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="d-grid">
+        <a asp-controller="AtmMenu" asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+    </div>
+</div>

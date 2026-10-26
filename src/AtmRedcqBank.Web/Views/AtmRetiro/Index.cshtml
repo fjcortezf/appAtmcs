@@ -1,0 +1,109 @@
+@model AtmRedcqBank.Web.Models.Dtos.RetiroRequest
+@{
+    ViewData["Title"] = "Retirar";
+    var cuenta = ViewBag.Cuenta as AtmRedcqBank.Web.Models.Entities.Cuenta;
+    var montosRapidos = ViewBag.MontosRapidos as List<int> ?? new List<int>();
+    var simboloCuenta = cuenta?.Moneda == AtmRedcqBank.Web.Models.Enums.Moneda.PEN ? "S/" : "$";
+}
+
+<div class="container mt-4" style="max-width: 620px;">
+    <h4 class="mb-3">Retirar dinero</h4>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">
+            <div>@ViewBag.Error</div>
+            @if (ViewBag.MaximoRetirable != null)
+            {
+                <div class="mt-2 fw-semibold">
+                    Usted puede retirar hasta un máximo de @ViewBag.MonedaMaximoSimbolo
+                    @(((decimal)ViewBag.MaximoRetirable).ToString("N2")).
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Selector de moneda -->
+    <div class="mb-4">
+        <label class="form-label fw-bold">Moneda del retiro</label>
+        <div class="btn-group w-100" role="group">
+            <button type="button" id="btnPEN" class="btn btn-primary moneda-btn" onclick="actualizarMoneda('PEN')">
+                S/ Soles
+            </button>
+            <button type="button" id="btnUSD" class="btn btn-outline-primary moneda-btn"
+                    onclick="actualizarMoneda('USD')">
+                $ Dólares
+            </button>
+        </div>
+    </div>
+
+    <p class="text-muted">Seleccione un monto (múltiplo de 20).</p>
+
+    <!-- Montos rápidos -->
+    <div class="row g-2 mb-4">
+        @foreach (var m in montosRapidos)
+        {
+            <div class="col-6 col-md-4">
+                <form asp-action="Retirar" method="post">
+                    <input type="hidden" name="Monto" value="@m" />
+                    <input type="hidden" name="MonedaRetiro" id="monedaRapido" value="PEN" />
+                    <button type="submit" class="btn btn-outline-primary w-100 py-3 fs-5 fw-bold" id="btnRapido_@m">
+                        S/ @m
+                    </button>
+                </form>
+            </div>
+        }
+    </div>
+
+    <!-- Monto personalizado -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h6 class="fw-bold">Otro monto</h6>
+            <form asp-action="Retirar" method="post">
+                <div class="input-group">
+                    <span class="input-group-text" id="simboloCustom">S/</span>
+                    <input type="number" step="20" min="20" name="Monto" class="form-control" placeholder="0" required>
+                    <input type="hidden" name="MonedaRetiro" id="monedaCustom" value="PEN">
+                    <button type="submit" class="btn btn-primary">Retirar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="d-grid">
+        <a asp-controller="AtmMenu" asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+    </div>
+</div>
+
+<script>
+    let monedaActual = 'PEN';
+
+    function actualizarMoneda(m) {
+        monedaActual = m;
+
+        // Actualizar clases de los botones
+        document.getElementById('btnPEN').className = 
+            m === 'PEN' ? 'btn btn-primary moneda-btn' : 'btn btn-outline-primary moneda-btn';
+        document.getElementById('btnUSD').className = 
+            m === 'USD' ? 'btn btn-primary moneda-btn' : 'btn btn-outline-primary moneda-btn';
+
+        // Actualizar inputs ocultos
+        document.querySelectorAll('input[name="MonedaRetiro"]').forEach(function(input) {
+            input.value = m;
+        });
+
+        // Actualizar símbolo
+        document.getElementById('simboloCustom').textContent = m === 'PEN' ? 'S/' : '$';
+
+        // Actualizar botones rápidos
+        document.querySelectorAll('[id^="btnRapido_"]').forEach(function(btn) {
+            var num = btn.id.split('_')[1];
+            btn.textContent = (m === 'PEN' ? 'S/ ' : '$ ') + num;
+        });
+    }
+
+    // Inicializar al cargar
+    document.addEventListener('DOMContentLoaded', function() {
+        actualizarMoneda('PEN');
+    });
+</script>

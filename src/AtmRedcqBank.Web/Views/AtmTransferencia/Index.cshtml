@@ -1,0 +1,104 @@
+@model AtmRedcqBank.Web.Models.Dtos.TransferenciaRequest
+@{
+    ViewData["Title"] = "Transferir";
+    var cuenta = ViewBag.Cuenta as AtmRedcqBank.Web.Models.Entities.Cuenta;
+    var cuentasPropias = ViewBag.CuentasPropias as List<AtmRedcqBank.Web.Models.Entities.Cuenta> ?? new List<AtmRedcqBank.Web.Models.Entities.Cuenta>();
+    var simbolo = cuenta?.Moneda == AtmRedcqBank.Web.Models.Enums.Moneda.PEN ? "S/" : "$";
+}
+
+<div class="container mt-4" style="max-width: 620px;">
+    <h4 class="mb-3">Transferir dinero</h4>
+
+    @if (cuenta != null)
+    {
+        <div class="card shadow-sm mb-4">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="fw-bold">@cuenta.TipoCuenta @(cuenta.SubtipoCuenta != AtmRedcqBank.Web.Models.Enums.SubtipoCuenta.NA ? cuenta.SubtipoCuenta.ToString() : "")</div>
+                    <div class="text-muted small">@cuenta.NumeroCuenta.Substring(0, 4) **** @cuenta.NumeroCuenta.Substring(10, 4)</div>
+                </div>
+                <div class="text-end">
+                    <div class="text-muted small">Saldo disponible</div>
+                    <div class="fw-bold fs-5">@simbolo @cuenta.Saldo.ToString("N2")</div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">
+            <div>@ViewBag.Error</div>
+            @if (ViewBag.MaximoTransferible != null)
+            {
+                <div class="mt-2 fw-semibold">
+                    Usted puede transferir hasta un máximo de @simbolo @(((decimal)ViewBag.MaximoTransferible).ToString("N2")).
+                </div>
+            }
+        </div>
+    }
+
+    <form asp-action="Transferir" method="post" id="formTransferencia">
+        <!-- Tipo -->
+        <div class="mb-4">
+            <label class="form-label fw-bold">Tipo de transferencia</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="Tipo" id="tipoPropia" value="PROPIA" checked onchange="actualizarTipo()">
+                <label class="form-check-label" for="tipoPropia">A cuenta propia</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="Tipo" id="tipoTerceros" value="TERCEROS" onchange="actualizarTipo()">
+                <label class="form-check-label" for="tipoTerceros">A terceros</label>
+            </div>
+        </div>
+
+        <!-- Cuenta destino (propia) -->
+        <div class="mb-3" id="bloquePropia">
+            <label class="form-label">Cuenta destino</label>
+            <select name="CuentaDestinoId" class="form-select" id="comboCuentaDestino">
+                <option value="">-- Seleccione --</option>
+                @foreach (var c in cuentasPropias)
+                {
+                    var sim = c.Moneda == AtmRedcqBank.Web.Models.Enums.Moneda.PEN ? "S/" : "$";
+                    <option value="@c.Id">@c.TipoCuenta @c.SubtipoCuenta - @c.NumeroCuenta.Substring(10, 4) - @sim @c.Saldo.ToString("N2")</option>
+                }
+            </select>
+        </div>
+
+        <!-- Cuenta destino (terceros) -->
+        <div class="mb-3 d-none" id="bloqueTerceros">
+            <label class="form-label">Cuenta destino (14 dígitos)</label>
+            <input type="text" name="CuentaDestino" class="form-control" maxlength="14" placeholder="1112 XXXXXXXXXX" id="inputCuentaDestino">
+        </div>
+
+        <!-- Monto -->
+        <div class="mb-4">
+            <label class="form-label">Monto</label>
+            <div class="input-group">
+                <span class="input-group-text">@simbolo</span>
+                <input type="number" step="0.01" min="0.01" name="Monto" class="form-control" placeholder="0.00" required>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary btn-lg">Transferir</button>
+            <a asp-controller="AtmMenu" asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    function actualizarTipo() {
+        var esPropia = document.getElementById('tipoPropia').checked;
+        document.getElementById('bloquePropia').classList.toggle('d-none', !esPropia);
+        document.getElementById('bloqueTerceros').classList.toggle('d-none', esPropia);
+        
+        // Limpiar el campo no visible
+        if (esPropia) {
+            document.getElementById('inputCuentaDestino').value = '';
+        } else {
+            document.getElementById('comboCuentaDestino').value = '';
+        }
+    }
+    actualizarTipo();
+</script>

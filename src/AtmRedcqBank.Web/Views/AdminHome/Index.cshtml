@@ -1,0 +1,90 @@
+@{
+    ViewData["Title"] = "Panel del Banco";
+    bool esAdmin = ViewBag.EsAdmin == true;
+    bool esSistemas = ViewBag.EsSistemas == true;
+    bool esOperador = ViewBag.EsOperador == true;
+}
+
+<div class="container mt-4" style="max-width: 900px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="h4 mb-0">Panel del Banco</h1>
+            <small class="text-muted">@User.Identity?.Name</small>
+        </div>
+        <form asp-controller="AdminAuth" asp-action="Logout" method="post" class="d-inline">
+            <button type="submit" class="btn btn-outline-danger btn-sm">Cerrar sesión</button>
+        </form>
+    </div>
+
+    <div class="alert alert-success mb-4">
+        Bienvenido, <strong>@User.FindFirst("Nombres")?.Value</strong>.
+        Rol: <strong>@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</strong>
+    </div>
+
+    <!-- ADMINISTRACIÓN (Solo ADMIN) -->
+    @if (esAdmin)
+    {
+        <h5 class="text-muted mb-2">Administración</h5>
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-4">
+                <a asp-controller="AdminTipoCambio" asp-action="Index" class="btn btn-light border w-100 h-100 py-4 text-decoration-none">
+                    <div class="fs-2 mb-2">💱</div>
+                    <div>Tipo de cambio</div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4">
+                <a asp-controller="AdminParametro" asp-action="Index" class="btn btn-light border w-100 h-100 py-4 text-decoration-none">
+                    <div class="fs-2 mb-2">⚙️</div>
+                    <div>Parámetros</div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4">
+                <a asp-controller="AdminCliente" asp-action="Index" class="btn btn-light border w-100 h-100 py-4 text-decoration-none">
+                    <div class="fs-2 mb-2">👥</div>
+                    <div>Clientes</div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4">
+                <a asp-controller="AdminSolicitud" asp-action="Index" class="btn btn-light border w-100 h-100 py-4 text-decoration-none">
+                    <div class="fs-2 mb-2">📩</div>
+                    <div>Solicitudes</div>
+                </a>
+            </div>
+        </div>
+    }
+
+    <!-- SISTEMAS (Admin y Sistemas) -->
+    @if (esAdmin || esSistemas)
+    {
+        <h5 class="text-muted mb-2">Sistemas y Auditoría</h5>
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-4">
+                <a asp-controller="AdminSistema" asp-action="Index" class="btn btn-light border w-100 h-100 py-4 text-decoration-none">
+                    <div class="fs-2 mb-2">🖥️</div>
+                    <div>Procesos Sistemas</div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4">
+                <a asp-controller="AdminAuditoria" asp-action="Index" class="btn btn-light border w-100 h-100 py-4 text-decoration-none">
+                    <div class="fs-2 mb-2">📜</div>
+                    <div>Auditoría</div>
+                </a>
+            </div>
+        </div>
+    }
+
+    <!-- OPERADOR_ATM (Admin y Operador) -->
+    @if (esAdmin || esOperador)
+    {
+        <h5 class="text-muted mb-2">Gestión del Cajero</h5>
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-4">
+                <a asp-controller="AdminAtm" asp-action="Index" class="btn btn-light border w-100 h-100 py-4 text-decoration-none">
+                    <div class="fs-2 mb-2">🏧</div>
+                    <div>Estado ATM</div>
+                </a>
+            </div>
+        </div>
+    }
+
+</div>

@@ -1,0 +1,157 @@
+@model AtmRedcqBank.Web.Models.Entities.Cliente
+@{
+    ViewData["Title"] = "Detalle del cliente";
+}
+
+<div class="container mt-4" style="max-width: 900px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Detalle del cliente</h3>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Volver</a>
+    </div>
+
+    <!-- Alert de error -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <!-- Alert de tarjeta creada -->
+    @if (TempData["TarjetaCreadaNumero"] != null)
+    {
+        <div class="alert alert-success">
+            <h5 class="fw-bold">Tarjeta creada</h5>
+            <p class="mb-1">Número: <strong>@TempData["TarjetaCreadaNumero"]</strong></p>
+            <p class="mb-1">PIN: <strong class="fs-5">@TempData["TarjetaCreadaPin"]</strong></p>
+            <hr>
+            <div class="small text-danger">
+                <i class="bi bi-exclamation-triangle"></i>
+                Anote el PIN. No se volverá a mostrar. Entréguelo al cliente.
+            </div>
+        </div>
+    }
+
+    <!-- Card de datos del cliente -->
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success">@TempData["Mensaje"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <!-- Card de datos del cliente -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <h5 class="fw-bold mb-0">@Model.Nombres @Model.Apellidos</h5>
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
+                        data-bs-target="#modalEditarCliente">
+                    <i class="bi bi-pencil"></i> Editar
+                </button>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <div class="text-muted small">Documento</div>
+                    <div>@Model.TipoDocumento @Model.NumeroDocumento</div>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <div class="text-muted small">Estado</div>
+                    <div>@Model.Estado</div>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <div class="text-muted small">Email</div>
+                    <div>@Model.Email</div>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <div class="text-muted small">Teléfono</div>
+                    <div>@Model.Telefono</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Encabezado y botón de crear tarjeta -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Tarjetas</h5>
+        <form asp-action="CrearTarjeta" method="post">
+            <input type="hidden" name="clienteId" value="@Model.Id" />
+            <button type="submit" class="btn btn-primary btn-sm">
+                <i class="bi bi-plus-circle"></i> Nueva tarjeta
+            </button>
+        </form>
+    </div>
+
+    <!-- Listado de tarjetas -->
+    @if (Model.Tarjetas == null || !Model.Tarjetas.Any())
+    {
+        <div class="alert alert-info">Este cliente no tiene tarjetas.</div>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var t in Model.Tarjetas)
+            {
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="fw-bold">@t.NumeroTarjeta.Substring(0, 4) **** **** @t.NumeroTarjeta.Substring(12,
+                                                                                                                                        4)</div>
+                                    <div class="text-muted small">Expira: @t.FechaExpiracion.ToString("MM/yyyy") · Intentos
+                                        fallidos: @t.IntentosFallidos</div>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge bg-primary">@t.Estado</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            <!-- Modal Editar Cliente -->
+            <div class="modal fade" id="modalEditarCliente" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form asp-action="Editar" method="post">
+                            <input type="hidden" name="id" value="@Model.Id" />
+                
+                            <div class="modal-header">
+                                <h5 class="modal-title">Editar cliente</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Nombres</label>
+                                    <input type="text" name="nombres" class="form-control" value="@Model.Nombres" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Apellidos</label>
+                                    <input type="text" name="apellidos" class="form-control" value="@Model.Apellidos"
+                                           required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" name="email" class="form-control" value="@Model.Email" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Teléfono</label>
+                                    <input type="text" name="telefono" class="form-control" value="@Model.Telefono" />
+                                </div>
+                                <div class="alert alert-info small py-2 mb-0">
+                                    El documento de identidad no se puede modificar desde aquí.
+                                </div>
+                            </div>
+                
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>

@@ -1,0 +1,37 @@
+@model AtmRedcqBank.Web.Models.Entities.Tarjeta
+@{
+    ViewData["Title"] = "Mi tarjeta";
+}
+
+<div class="container mt-5" style="max-width: 520px;">
+    <div class="card shadow">
+        <div class="card-body p-5">
+            <h4 class="mb-4 text-center">Datos de mi Tarjeta</h4>
+
+            <div class="mb-3">
+                <div class="text-muted small">Número</div>
+                <div class="fw-bold fs-5">@Model.NumeroTarjeta.Substring(0, 4) **** **** @Model.NumeroTarjeta.Substring(12, 4)</div>
+            </div>
+
+            <div class="mb-3">
+                <div class="text-muted small">Titular</div>
+                <div class="fw-bold">@Model.Cliente?.Nombres @Model.Cliente?.Apellidos</div>
+            </div>
+
+            <div class="row">
+                <div class="col-6 mb-3">
+                    <div class="text-muted small">Vencimiento</div>
+                    <div class="fw-bold">@Model.FechaExpiracion.ToString("MM/yyyy")</div>
+                </div>
+                <div class="col-6 mb-3">
+                    <div class="text-muted small">Estado</div>
+                    <div class="fw-bold">@Model.Estado</div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+                <a asp-controller="AtmMenu" asp-action="Index" class="btn btn-primary btn-lg">Volver al menú</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,142 @@
+@model AtmRedcqBank.Web.Models.Entities.Atm
+@{
+    ViewData["Title"] = "Estado del ATM";
+    var stock = ViewBag.Stock as List<AtmRedcqBank.Web.Models.Entities.AtmCash> ?? new();
+    var movimientos = ViewBag.Movimientos as List<AtmRedcqBank.Web.Models.Entities.AtmCashMovimiento> ?? new();
+    var estados = ViewBag.Estados as AtmRedcqBank.Web.Models.Enums.EstadoATM[] ?? Array.Empty<AtmRedcqBank.Web.Models.Enums.EstadoATM>();
+    
+    var totalPen = stock.Where(s => s.Moneda == AtmRedcqBank.Web.Models.Enums.Moneda.PEN).Sum(s => s.Denominacion * s.Cantidad);
+    var totalUsd = stock.Where(s => s.Moneda == AtmRedcqBank.Web.Models.Enums.Moneda.USD).Sum(s => s.Denominacion * s.Cantidad);
+}
+
+<div class="container mt-4" style="max-width: 1000px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Estado y arqueo del cajero</h3>
+        <a asp-controller="AdminHome" asp-action="Index" class="btn btn-outline-secondary btn-sm">Volver</a>
+    </div>
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success">@TempData["Mensaje"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <!-- Resumen -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-4">
+                    <div class="text-muted small">Código</div>
+                    <div class="fw-bold fs-5">@Model.Codigo</div>
+                    <div class="text-muted small">@Model.Ubicacion</div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="text-muted small">Estado</div>
+                    <div class="fw-bold fs-5 text-primary">@Model.Estado</div>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="text-muted small">Totales</div>
+                    <div class="fw-bold">S/ @totalPen.ToString("N2")</div>
+                    <div class="fw-bold">$ @totalUsd.ToString("N2")</div>
+                </div>
+            </div>
+
+            <hr>
+            
+            <form asp-action="CambiarEstado" method="post" class="row g-2 align-items-end">
+                <input type="hidden" name="atmId" value="@Model.Id" />
+                <div class="col-md-6">
+                    <label class="form-label small mb-1">Cambiar estado</label>
+                    <select name="estado" class="form-select">
+                        @foreach (var e in estados)
+                        {
+                            <option value="@e" selected="@(e == Model.Estado)">@e.ToString().Replace("_", " ")</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">Aplicar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Arqueo -->
+    <h5 class="mb-3">Arqueo por denominación</h5>
+    
+    <form asp-action="OperarStock" method="post">
+        <input type="hidden" name="atmId" value="@Model.Id" />
+        <div class="card shadow-sm mb-4">
+            <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Moneda</th>
+                            <th class="text-end">Denominación</th>
+                            <th class="text-end">Cantidad actual</th>
+                            <th class="text-end" style="width: 140px;">Reponer / Retirar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in stock)
+                        {
+                            <tr>
+                                <td>@s.Moneda</td>
+                                <td class="text-end">@(s.Moneda == AtmRedcqBank.Web.Models.Enums.Moneda.PEN ? "S/" : "$") @s.Denominacion</td>
+                                <td class="text-end fw-bold">@s.Cantidad</td>
+                                <td class="text-end">
+                                    <input type="number" min="0" name="cant_@s.Id" class="form-control form-control-sm text-end" placeholder="0" />
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer d-flex gap-2">
+                <button type="submit" name="sumar" value="true" class="btn btn-success">Reponer (Sumar)</button>
+                <button type="submit" name="sumar" value="false" class="btn btn-outline-danger">Retirar (Restar)</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Movimientos -->
+    <h5 class="mb-3">Últimos movimientos de efectivo</h5>
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Tipo</th>
+                        <th>Denominación</th>
+                        <th class="text-end">Cantidad</th>
+                        <th class="text-end">Antes</th>
+                        <th class="text-end">Después</th>
+                        <th>Operador</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var m in movimientos)
+                    {
+                        <tr>
+                            <td class="text-muted small">@m.Fecha.ToString("dd/MM HH:mm")</td>
+                            <td>@m.TipoMovimiento</td>
+                            <td>@m.Moneda @m.Denominacion</td>
+                            <td class="text-end @(m.Cantidad > 0 ? "text-success" : "text-danger")">@m.Cantidad</td>
+                            <td class="text-end">@m.SaldoAnterior</td>
+                            <td class="text-end">@m.SaldoPosterior</td>
+                            <td class="text-muted small">@m.Operador?.Nombres</td>
+                        </tr>
+                    }
+                    @if (movimientos.Count == 0)
+                    {
+                        <tr><td colspan="7" class="text-center text-muted py-3">Sin movimientos.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

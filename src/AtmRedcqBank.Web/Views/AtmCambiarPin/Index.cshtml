@@ -1,0 +1,52 @@
+@model AtmRedcqBank.Web.Models.Dtos.CambioPinRequest
+@{
+    ViewData["Title"] = "Cambiar PIN";
+    bool forzado = ViewBag.Forzado ?? false;
+}
+
+<div class="container mt-4" style="max-width: 520px;">
+    <h4 class="mb-3">Cambiar PIN</h4>
+
+    @if (forzado)
+    {
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i>
+            Por seguridad, debe cambiar su PIN antes de continuar.
+        </div>
+    }
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <div asp-validation-summary="All"></div>
+        </div>
+    }
+
+    <form asp-action="Cambiar" method="post" autocomplete="off">
+        <div class="mb-3">
+            <label asp-for="PinActual" class="form-label">PIN actual</label>
+            <input asp-for="PinActual" class="form-control text-center" type="password" maxlength="4" placeholder="••••" required autofocus />
+            <span asp-validation-for="PinActual" class="text-danger small"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="PinNuevo" class="form-label">Nuevo PIN</label>
+            <input asp-for="PinNuevo" class="form-control text-center" type="password" maxlength="4" placeholder="••••" required />
+            <span asp-validation-for="PinNuevo" class="text-danger small"></span>
+        </div>
+
+        <div class="mb-4">
+            <label asp-for="PinConfirmacion" class="form-label">Confirmar nuevo PIN</label>
+            <input asp-for="PinConfirmacion" class="form-control text-center" type="password" maxlength="4" placeholder="••••" required />
+            <span asp-validation-for="PinConfirmacion" class="text-danger small"></span>
+        </div>
+
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary btn-lg">Cambiar PIN</button>
+            @if (!forzado)
+            {
+                <a asp-controller="AtmMenu" asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+            }
+        </div>
+    </form>
+</div>
